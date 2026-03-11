@@ -31,21 +31,24 @@ export const Dashboard = ({ currentContract }: { currentContract: Contract }) =>
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {cards.map((card, i) => (
-          <motion.div 
-            key={i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="card flex items-center justify-between cursor-pointer hover:border-nexus-primary transition-all group"
-            onClick={() => handleCardClick(card.id, card.label)}
-          >
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover:text-nexus-primary transition-colors">{card.label}</p>
-              <p className="text-3xl font-bold mt-1 text-slate-700">{card.value}</p>
-            </div>
-            <card.icon className={`w-8 h-8 opacity-20 ${card.color} group-hover:opacity-40 transition-opacity`} />
-          </motion.div>
-        ))}
+        {cards.map((card, i) => {
+          const isClickable = card.id !== "totalFuncionarios";
+          return (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`card flex items-center justify-between transition-all group ${isClickable ? 'cursor-pointer hover:border-nexus-primary' : 'cursor-default'}`}
+              onClick={() => isClickable && handleCardClick(card.id, card.label)}
+            >
+              <div>
+                <p className={`text-[10px] font-bold text-slate-500 uppercase tracking-wider transition-colors ${isClickable ? 'group-hover:text-nexus-primary' : ''}`}>{card.label}</p>
+                <p className="text-3xl font-bold mt-1 text-slate-700">{card.value}</p>
+              </div>
+              <card.icon className={`w-8 h-8 opacity-20 ${card.color} ${isClickable ? 'group-hover:opacity-40' : ''} transition-opacity`} />
+            </motion.div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -120,13 +123,12 @@ export const Dashboard = ({ currentContract }: { currentContract: Contract }) =>
                         <td className="px-4 py-3 font-medium">{f.nome}</td>
                         <td className="px-4 py-3">
                           <div className="text-xs font-bold text-slate-700">{f.cargo}</div>
-                          <div className="text-[10px] text-slate-400 uppercase">{f.setor}</div>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            f.status === 'Ativo' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                            (f.status === 'Ativo' || !f.status) ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
                           }`}>
-                            {f.status}
+                            {f.status || "Ativo"}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-xs font-bold text-nexus-primary uppercase">

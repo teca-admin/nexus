@@ -15,7 +15,7 @@ interface EmployeeFormProps {
 export const EmployeeForm = ({ isOpen, onClose, onSave, initialData, title }: EmployeeFormProps) => {
   const [formData, setFormData] = useState({
     nome: "", cpf: "", rg: "", data_nascimento: "", matricula: "", data_admissao: "", cargo: "",
-    email: "", telefone: "", endereco: "", foto: ""
+    email: "", telefone: "", foto: ""
   });
 
   useEffect(() => {
@@ -30,13 +30,12 @@ export const EmployeeForm = ({ isOpen, onClose, onSave, initialData, title }: Em
         cargo: initialData.cargo || "",
         email: initialData.email || "",
         telefone: initialData.telefone || "",
-        endereco: initialData.endereco || "",
         foto: initialData.foto || ""
       });
     } else {
       setFormData({
         nome: "", cpf: "", rg: "", data_nascimento: "", matricula: "", data_admissao: "", cargo: "",
-        email: "", telefone: "", endereco: "", foto: ""
+        email: "", telefone: "", foto: ""
       });
     }
   }, [initialData, isOpen]);
@@ -147,10 +146,6 @@ export const EmployeeForm = ({ isOpen, onClose, onSave, initialData, title }: Em
                     <div>
                       <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Telefone / WhatsApp</label>
                       <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.telefone} onChange={e => setFormData({...formData, telefone: e.target.value})} required placeholder="(00) 00000-0000" />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Endereço Completo</label>
-                      <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} required placeholder="Rua, Número, Bairro, Cidade - UF" />
                     </div>
                   </div>
                 </section>

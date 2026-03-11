@@ -62,8 +62,16 @@ export const CustomDatePicker = ({ value, onChange, className, textClassName, st
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
-    const [y, m, d] = dateStr.split("-");
-    return `${d}/${m}/${y}`;
+    // Se já estiver no formato DD/MM/YYYY, retorna como está
+    if (dateStr.includes("/") && dateStr.split("/")[0].length <= 2) return dateStr;
+    
+    // Se estiver no formato YYYY-MM-DD
+    if (dateStr.includes("-")) {
+      const parts = dateStr.split("-");
+      if (parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return `${parts[0]}/${parts[1]}/${parts[2]}`;
+    }
+    return dateStr;
   };
 
   return (

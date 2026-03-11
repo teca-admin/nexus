@@ -54,7 +54,8 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
       cpf: formData.cpf,
       rg: formData.rg,
       data_nascimento: formData.data_nascimento,
-      foto: formData.foto
+      foto: formData.foto,
+      contrato: data.funcionario.contrato
     };
     
     const updatedRh = {
@@ -71,7 +72,7 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
     fetch(`/api/funcionarios/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: JSON.stringify({ ...formData, contrato: data.funcionario.contrato })
     });
   };
 
@@ -191,7 +192,24 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         <p className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Nascimento</p>
                       </div>
                       <p className="text-[15px] font-bold text-slate-700 pl-6.5" style={{ fontFamily: 'system-ui' }}>
-                        {data.funcionario.data_nascimento ? new Date(data.funcionario.data_nascimento).toLocaleDateString('pt-BR') : 'N/A'}
+                        {data.funcionario.data_nascimento ? (
+                          data.funcionario.data_nascimento.includes('-') && data.funcionario.data_nascimento.split('-')[0].length === 4 
+                            ? new Date(data.funcionario.data_nascimento).toLocaleDateString('pt-BR')
+                            : data.funcionario.data_nascimento
+                        ) : 'N/A'}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-nexus-primary/30 hover:bg-white transition-all duration-300">
+                      <div className="flex items-center gap-3 mb-1">
+                        <Calendar className="w-[15px] h-[15px] text-slate-400 group-hover:text-nexus-primary transition-colors" />
+                        <p className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Admissão</p>
+                      </div>
+                      <p className="text-[15px] font-bold text-slate-700 pl-6.5" style={{ fontFamily: 'system-ui' }}>
+                        {data.funcionario.data_admissao ? (
+                          data.funcionario.data_admissao.includes('-') && data.funcionario.data_admissao.split('-')[0].length === 4 
+                            ? new Date(data.funcionario.data_admissao).toLocaleDateString('pt-BR')
+                            : data.funcionario.data_admissao
+                        ) : 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -224,16 +242,6 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         <div className="flex-1">
                           <p className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Telefone / WhatsApp</p>
                           <p className="text-xs font-bold text-slate-700">{data.rh?.telefone || 'N/A'}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group">
-                        <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors mt-1">
-                          <MapPin className="w-4 h-4 text-orange-600" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Residência</p>
-                          <p className="text-xs font-bold text-slate-700 leading-relaxed">{data.rh?.endereco || 'N/A'}</p>
                         </div>
                       </div>
                     </div>

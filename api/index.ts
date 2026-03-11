@@ -72,8 +72,18 @@ app.get("/api/funcionarios", async (req, res) => {
     query = query.eq("contrato", contrato);
   }
   
-  const { data: list } = await query;
-  res.json(list || []);
+  const { data: list, error } = await query;
+  if (error) {
+    console.error("Erro ao buscar funcionários:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+  
+  const processedList = list?.map(f => ({
+    ...f,
+    status: f.status || "Ativo"
+  })) || [];
+  
+  res.json(processedList);
 });
 
 app.get("/api/funcionarios/matricula/:matricula", async (req, res) => {
@@ -90,22 +100,32 @@ app.get("/api/funcionarios/matricula/:matricula", async (req, res) => {
 });
 
 app.post("/api/funcionarios", async (req, res) => {
-  const { nome, cpf, rg, data_nascimento, matricula, data_admissao, cargo, setor, email, telefone, endereco } = req.body;
+  const { nome, cpf, rg, data_nascimento, matricula, data_admissao, cargo, email, telefone, contrato, foto } = req.body;
   try {
     const { data: func, error: fErr } = await supabase
       .from("funcionarios")
-      .insert([{ nome, cpf, rg, data_nascimento, matricula, data_admissao, cargo, setor }])
+      .insert([{ 
+        nome, 
+        cpf, 
+        rg, 
+        data_nascimento, 
+        matricula, 
+        data_admissao, 
+        cargo, 
+        email, 
+        telefone, 
+        contrato,
+        foto,
+        status: "Ativo"
+      }])
       .select()
       .single();
 
     if (fErr) throw fErr;
 
-    await supabase
-      .from("rh_dados")
-      .insert([{ funcionario_id: func.id, email, telefone, endereco }]);
-
     res.json({ success: true, id: func.id });
   } catch (e: any) {
+    console.error("Erro ao criar funcionário:", e.message);
     res.status(400).json({ success: false, message: e.message });
   }
 });
@@ -114,27 +134,69 @@ app.get("/api/funcionarios/:id", async (req, res) => {
   const id = req.params.id;
   
   const [
-    { data: funcionario },
-    { data: rh },
+    { data: funcionario, error: fErr },
     { data: sst },
     { data: escala },
     { data: treinamentos }
   ] = await Promise.all([
     supabase.from("funcionarios").select("*").eq("id", id).single(),
-    supabase.from("rh_dados").select("*").eq("funcionario_id", id).single(),
     supabase.from("sst_asos").select("*").eq("funcionario_id", id).order("data_vencimento", { ascending: false }),
     supabase.from("escalas").select("*").eq("funcionario_id", id).order("data", { ascending: false }).limit(5),
     supabase.from("resultados_treinamento").select(`nota, status, data_conclusao, cursos ( nome )`).eq("funcionario_id", id)
   ]);
 
+  if (fErr) {
+    return res.status(404).json({ success: false, message: "Funcionário não encontrado" });
+  }
+
+  const funcionarioComStatus = {
+    ...funcionario,
+    status: funcionario.status || "Ativo"
+  };
+
   const formattedTreinamentos = treinamentos?.map((t: any) => ({
-    nome: t.cursos.nome,
+    nome: t.cursos?.nome || "Curso Removido",
     nota: t.nota,
     status: t.status,
     data_conclusao: t.data_conclusao
   })) || [];
 
-  res.json({ funcionario, rh, sst, escala, treinamentos: formattedTreinamentos });
+  // Mock RH data if not found in funcionarios (fallback for old schema if needed, but here we assume new schema)
+  const rh = {
+    email: funcionario.email,
+    telefone: funcionario.telefone,
+    endereco: funcionario.endereco || "Não informado"
+  };
+
+  res.json({ funcionario: funcionarioComStatus, rh, sst, escala, treinamentos: formattedTreinamentos });
+});
+
+app.put("/api/funcionarios/:id", async (req, res) => {
+  const { nome, cpf, rg, data_nascimento, matricula, data_admissao, cargo, email, telefone, contrato, foto } = req.body;
+  try {
+    const { error } = await supabase
+      .from("funcionarios")
+      .update({ 
+        nome, 
+        cpf, 
+        rg, 
+        data_nascimento, 
+        matricula, 
+        data_admissao, 
+        cargo, 
+        email, 
+        telefone, 
+        contrato,
+        foto 
+      })
+      .eq("id", req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (e: any) {
+    console.error("Erro ao atualizar funcionário:", e.message);
+    res.status(400).json({ success: false, message: e.message });
+  }
 });
 
 // SST API
@@ -353,17 +415,21 @@ app.get("/api/dashboard", async (req, res) => {
   if (contrato) query = query.eq("contrato", contrato);
   
   const { data: allFuncionarios } = await query;
+  const processedFuncionarios = allFuncionarios?.map(f => ({
+    ...f,
+    status: f.status || "Ativo"
+  })) || [];
 
   // Retorna os dados disponíveis e zera os que dependem de tabelas removidas
   res.json({ 
-    totalFuncionarios: allFuncionarios?.length || 0, 
+    totalFuncionarios: processedFuncionarios.length, 
     asosVencidos: 0, 
     semEscala: 0, 
     treinamentosPendentes: 0,
     atividades: [],
     alertas: [],
     listas: {
-      totalFuncionarios: allFuncionarios || [],
+      totalFuncionarios: processedFuncionarios,
       asosVencidos: [],
       semEscala: [],
       treinamentosPendentes: []
@@ -373,7 +439,7 @@ app.get("/api/dashboard", async (req, res) => {
 
 app.get("/api/search", async (req, res) => {
   const { q } = req.query;
-  const { data: results } = await supabase.from("funcionarios").select("id, nome, matricula, cpf, cargo, setor").or(`nome.ilike.%${q}%,matricula.ilike.%${q}%,cpf.ilike.%${q}%`);
+  const { data: results } = await supabase.from("funcionarios").select("id, nome, matricula, cpf, cargo").or(`nome.ilike.%${q}%,matricula.ilike.%${q}%,cpf.ilike.%${q}%`);
   res.json(results || []);
 });
 

@@ -30,7 +30,7 @@ export const RHModule = ({ user, onViewDetails, currentContract }: { user: User,
     const res = await fetch("/api/funcionarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, contrato: currentContract }),
     });
     
     if (res.ok) {
@@ -50,12 +50,23 @@ export const RHModule = ({ user, onViewDetails, currentContract }: { user: User,
   };
 
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    const [y, m, d] = dateStr.split("-");
-    return `${d}/${m}/${y}`;
+    if (!dateStr) return "-";
+    // Tenta tratar formatos YYYY-MM-DD ou DD/MM/YYYY
+    if (dateStr.includes("-")) {
+      const parts = dateStr.split("-");
+      if (parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`; // YYYY-MM-DD
+      return `${parts[0]}/${parts[1]}/${parts[2]}`; // DD-MM-YYYY
+    }
+    if (dateStr.includes("/")) {
+      return dateStr; // Já está no formato esperado ou similar
+    }
+    return dateStr;
   };
 
-  const filteredFuncionarios = funcionarios.filter(f => {
+  const filteredFuncionarios = funcionarios.map(f => ({
+    ...f,
+    status: f.status || "Ativo" // Default status if null
+  })).filter(f => {
     const matchesSearch = f.nome.toLowerCase().includes(searchQuery.toLowerCase()) || f.matricula.includes(searchQuery);
     const matchesStatus = filterStatus === "Todos" || f.status === filterStatus;
     return matchesSearch && matchesStatus;
