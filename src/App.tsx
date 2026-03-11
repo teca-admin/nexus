@@ -156,22 +156,26 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 bg-nexus-bg overflow-y-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentContract}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            {activeModule === "dashboard" && <Dashboard currentContract={currentContract} />}
-            {activeModule === "rh" && <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />}
-            {activeModule === "sst" && <SSTModule user={user} currentContract={currentContract} />}
-            {activeModule === "escala" && <EscalaModule user={user} currentContract={currentContract} />}
-            {activeModule === "treinamento" && <TreinamentoModule user={user} currentContract={currentContract} />}
-          </motion.div>
-        </AnimatePresence>
+      <main className="flex-1 bg-nexus-bg overflow-y-auto relative">
+        <div className={activeModule === "dashboard" ? "block" : "hidden"}>
+          <Dashboard currentContract={currentContract} />
+        </div>
+        
+        <div className={activeModule === "rh" ? "block" : "hidden"}>
+          <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />
+        </div>
+        
+        <div className={activeModule === "sst" ? "block" : "hidden"}>
+          <SSTModule user={user} currentContract={currentContract} />
+        </div>
+        
+        <div className={activeModule === "escala" ? "block" : "hidden"}>
+          <EscalaModule user={user} currentContract={currentContract} />
+        </div>
+        
+        <div className={activeModule === "treinamento" ? "block" : "hidden"}>
+          <TreinamentoModule user={user} currentContract={currentContract} />
+        </div>
       </main>
 
       {/* Footer / Quick Actions */}
