@@ -7,6 +7,9 @@
 }
 
 @layer base {
+  html {
+    font-size: 13px;
+  }
   body {
     @apply bg-nexus-bg text-slate-900 font-sans;
   }

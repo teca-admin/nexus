@@ -157,25 +157,36 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1 bg-nexus-bg overflow-y-auto relative">
-        <div className={activeModule === "dashboard" ? "block" : "hidden"}>
-          <Dashboard currentContract={currentContract} />
-        </div>
-        
-        <div className={activeModule === "rh" ? "block" : "hidden"}>
-          <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />
-        </div>
-        
-        <div className={activeModule === "sst" ? "block" : "hidden"}>
-          <SSTModule user={user} currentContract={currentContract} />
-        </div>
-        
-        <div className={activeModule === "escala" ? "block" : "hidden"}>
-          <EscalaModule user={user} currentContract={currentContract} />
-        </div>
-        
-        <div className={activeModule === "treinamento" ? "block" : "hidden"}>
-          <TreinamentoModule user={user} currentContract={currentContract} />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentContract}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="w-full h-full"
+          >
+            <div className={activeModule === "dashboard" ? "block" : "hidden"}>
+              <Dashboard currentContract={currentContract} />
+            </div>
+            
+            <div className={activeModule === "rh" ? "block" : "hidden"}>
+              <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />
+            </div>
+            
+            <div className={activeModule === "sst" ? "block" : "hidden"}>
+              <SSTModule user={user} currentContract={currentContract} />
+            </div>
+            
+            <div className={activeModule === "escala" ? "block" : "hidden"}>
+              <EscalaModule user={user} currentContract={currentContract} />
+            </div>
+            
+            <div className={activeModule === "treinamento" ? "block" : "hidden"}>
+              <TreinamentoModule user={user} currentContract={currentContract} />
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Footer / Quick Actions */}
