@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { 
-  LogOut, 
+  X, 
   User, 
   Calendar, 
   ShieldCheck, 
@@ -14,25 +14,66 @@ import {
   Briefcase,
   CheckCircle2,
   XCircle,
-  Clock
+  Clock,
+  Edit2,
+  Save,
+  Camera,
+  X as CloseIcon
 } from "lucide-react";
 import { motion } from "motion/react";
+import { EmployeeForm } from "./EmployeeForm";
 
 export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () => void, initialData?: any }) => {
   const [data, setData] = useState<any>(initialData ? { funcionario: initialData, rh: null, treinamentos: [] } : null);
   const [loading, setLoading] = useState(!initialData);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    // If we have initialData, we only need to fetch the extra details
-    // but the API currently returns everything. 
-    // We'll fetch and update the state.
+    // Disable body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
     fetch(`/api/funcionarios/${id}`)
       .then(res => res.json())
       .then(d => {
         setData(d);
         setLoading(false);
       });
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [id]);
+
+  const handleSave = (formData: any) => {
+    // Split the data back into funcionario and rh
+    const updatedFuncionario = {
+      ...data.funcionario,
+      nome: formData.nome,
+      matricula: formData.matricula,
+      cargo: formData.cargo,
+      cpf: formData.cpf,
+      rg: formData.rg,
+      data_nascimento: formData.data_nascimento,
+      foto: formData.foto
+    };
+    
+    const updatedRh = {
+      ...data.rh,
+      email: formData.email,
+      telefone: formData.telefone,
+      endereco: formData.endereco
+    };
+
+    setData({ ...data, funcionario: updatedFuncionario, rh: updatedRh });
+    setIsEditing(false);
+    
+    // In a real app, this would be a PUT request
+    fetch(`/api/funcionarios/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center">
@@ -65,11 +106,20 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
               <div className="absolute top-0 right-0 w-64 h-64 bg-nexus-primary/10 rounded-full -mr-32 -mt-32 blur-3xl" />
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full -ml-24 -mb-24 blur-3xl" />
               
-              <div className="relative flex justify-between items-start">
+              <div className="relative flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center text-4xl font-black border border-white/20 shadow-2xl backdrop-blur-md">
-                      {data.funcionario.nome.charAt(0)}
+                  <div className="relative group/photo">
+                    <div className="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center text-4xl font-black border border-white/20 shadow-2xl backdrop-blur-md overflow-hidden">
+                      {data.funcionario.foto ? (
+                        <img 
+                          src={data.funcionario.foto} 
+                          alt={data.funcionario.nome} 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        data.funcionario.nome.charAt(0)
+                      )}
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-nexus-sidebar rounded-full flex items-center justify-center shadow-lg" title="Ativo">
                       <CheckCircle2 className="w-4 h-4 text-white" />
@@ -82,18 +132,31 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         Matrícula {data.funcionario.matricula}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <Briefcase className="w-4 h-4 text-nexus-primary" />
-                      {data.funcionario.cargo} <span className="text-white/20">•</span> {data.funcionario.setor}
-                    </p>
+                      <p className="text-sm font-medium text-slate-300">
+                        {data.funcionario.cargo}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <button 
-                  onClick={onClose} 
-                  className="p-3 hover:bg-white/10 rounded-xl transition-all border border-white/5 hover:border-white/20 group"
-                >
-                  <LogOut className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" />
-                </button>
+                
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all border border-white/10 group"
+                  >
+                    <Edit2 className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                    Editar Dados
+                  </button>
+                  <button 
+                    onClick={onClose} 
+                    className="p-3 hover:bg-white/10 rounded-xl transition-all border border-white/5 hover:border-white/20 group flex items-center justify-center"
+                    title="Fechar"
+                  >
+                    <X className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -148,7 +211,7 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
                           <Mail className="w-4 h-4 text-blue-600" />
                         </div>
-                        <div className="overflow-hidden">
+                        <div className="overflow-hidden flex-1">
                           <p className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">E-mail Corporativo</p>
                           <p className="text-xs font-bold text-slate-700 truncate">{data.rh?.email || 'N/A'}</p>
                         </div>
@@ -158,7 +221,7 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0 group-hover:bg-green-100 transition-colors">
                           <Phone className="w-4 h-4 text-green-600" />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <p className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Telefone / WhatsApp</p>
                           <p className="text-xs font-bold text-slate-700">{data.rh?.telefone || 'N/A'}</p>
                         </div>
@@ -168,7 +231,7 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                         <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors mt-1">
                           <MapPin className="w-4 h-4 text-orange-600" />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <p className="text-[8px] font-black uppercase text-slate-400 tracking-tighter">Residência</p>
                           <p className="text-xs font-bold text-slate-700 leading-relaxed">{data.rh?.endereco || 'N/A'}</p>
                         </div>
@@ -268,6 +331,13 @@ export const View360 = ({ id, onClose, initialData }: { id: number, onClose: () 
                 )}
               </div>
             </div>
+            <EmployeeForm 
+              isOpen={isEditing} 
+              onClose={() => setIsEditing(false)} 
+              onSave={handleSave} 
+              initialData={{ ...data.funcionario, ...data.rh }}
+              title="Editar Colaborador"
+            />
           </>
         )}
       </motion.div>

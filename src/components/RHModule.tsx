@@ -2,35 +2,30 @@ import React, { useState, useEffect } from "react";
 import { Search, Filter, Mail, Phone, Briefcase, Calendar, X, UserPlus, Users } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { User, Funcionario, Contract } from "../types";
-import { CustomSelect, CustomDatePicker } from "./CustomComponents";
+import { CustomSelect } from "./CustomComponents";
+import { EmployeeForm } from "./EmployeeForm";
 
 export const RHModule = ({ user, onViewDetails, currentContract }: { user: User, onViewDetails?: (funcionario: Funcionario) => void, currentContract: Contract }) => {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("Todos");
-  const [formData, setFormData] = useState({
-    nome: "", cpf: "", rg: "", data_nascimento: "", matricula: "", data_admissao: "", cargo: "", contrato: "",
-    email: "", telefone: "", endereco: "", setor: ""
-  });
 
   const load = () => fetch(`/api/funcionarios?contrato=${currentContract}`).then(res => res.json()).then(setFuncionarios);
   useEffect(() => { load(); }, [currentContract]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSave = async (formData: any) => {
     // Optimistic update
     const tempId = Date.now();
     const newFuncionario = {
       ...formData,
+      contrato: currentContract,
       id: tempId,
       status: "Ativo"
     } as Funcionario;
     
     setFuncionarios(prev => [newFuncionario, ...prev]);
     setShowForm(false);
-    setFormData({ nome: "", cpf: "", rg: "", data_nascimento: "", matricula: "", data_admissao: "", cargo: "", setor: "", email: "", telefone: "", endereco: "" });
 
     const res = await fetch("/api/funcionarios", {
       method: "POST",
@@ -202,123 +197,11 @@ export const RHModule = ({ user, onViewDetails, currentContract }: { user: User,
         </div>
       </div>
 
-      <AnimatePresence>
-        {showForm && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.98, y: 10 }} 
-              animate={{ opacity: 1, scale: 1, y: 0 }} 
-              exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-            >
-              <div className="bg-nexus-sidebar p-6 text-white flex justify-between items-center shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                    <UserPlus className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold uppercase tracking-tight">Novo Colaborador</h3>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">Preencha os dados para cadastro</p>
-                  </div>
-                </div>
-                <button onClick={() => setShowForm(false)} className="hover:bg-white/10 p-2 rounded-full transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <div className="overflow-y-auto p-6">
-                <form id="employee-form" onSubmit={handleSubmit} className="space-y-8">
-                  {/* Dados Pessoais */}
-                  <section>
-                    <h4 className="text-xs font-bold uppercase text-nexus-primary mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <Users className="w-4 h-4" /> Dados Pessoais
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="md:col-span-2">
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Nome Completo</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '13px', fontFamily: 'system-ui', fontWeight: 'normal' }} value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} required placeholder="Ex: João da Silva" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">CPF</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '13px', fontFamily: 'system-ui' }} value={formData.cpf} onChange={e => setFormData({...formData, cpf: e.target.value})} required placeholder="000.000.000-00" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">RG</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '13px', fontFamily: 'system-ui' }} value={formData.rg} onChange={e => setFormData({...formData, rg: e.target.value})} required placeholder="00.000.000-0" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Data de Nascimento</label>
-                        <CustomDatePicker 
-                          value={formData.data_nascimento} 
-                          onChange={date => setFormData({...formData, data_nascimento: date})} 
-                          style={{ fontSize: '13px', fontFamily: 'system-ui' }}
-                          textStyle={{ color: '#aaaaaa', fontSize: '12px' }}
-                        />
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Contato */}
-                  <section>
-                    <h4 className="text-xs font-bold uppercase text-nexus-primary mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <Phone className="w-4 h-4" /> Contato
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">E-mail Corporativo</label>
-                        <input type="email" className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required placeholder="joao@empresa.com" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Telefone / WhatsApp</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.telefone} onChange={e => setFormData({...formData, telefone: e.target.value})} required placeholder="(00) 00000-0000" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Endereço Completo</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})} required placeholder="Rua, Número, Bairro, Cidade - UF" />
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Dados Profissionais */}
-                  <section>
-                    <h4 className="text-xs font-bold uppercase text-nexus-primary mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <Briefcase className="w-4 h-4" /> Dados Profissionais
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Matrícula</label>
-                        <input className="input-field font-mono bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.matricula} onChange={e => setFormData({...formData, matricula: e.target.value})} required placeholder="EX: 10045" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Data de Admissão</label>
-                        <input type="date" className="input-field bg-slate-50 focus:bg-white cursor-pointer" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.data_admissao} onChange={e => setFormData({...formData, data_admissao: e.target.value})} required />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Função / Cargo</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.cargo} onChange={e => setFormData({...formData, cargo: e.target.value})} required placeholder="Ex: Operador de Máquina" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase text-slate-500 mb-1.5">Contrato</label>
-                        <input className="input-field bg-slate-50 focus:bg-white" style={{ fontSize: '12px', fontFamily: 'system-ui' }} value={formData.contrato} onChange={e => setFormData({...formData, contrato: e.target.value})} required placeholder="Ex: TECA" />
-                      </div>
-                    </div>
-                  </section>
-                </form>
-              </div>
-              
-              <div className="p-6 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3">
-                <button type="button" onClick={() => setShowForm(false)} className="px-6 py-2.5 text-slate-500 font-bold uppercase text-xs tracking-wider hover:bg-slate-200 rounded-lg transition-colors">
-                  Cancelar
-                </button>
-                <button type="submit" form="employee-form" className="btn-primary px-8 py-2.5 text-xs tracking-wider shadow-lg shadow-nexus-primary/20">
-                  Salvar Registro
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <EmployeeForm 
+        isOpen={showForm} 
+        onClose={() => setShowForm(false)} 
+        onSave={handleSave} 
+      />
     </div>
   );
 };
