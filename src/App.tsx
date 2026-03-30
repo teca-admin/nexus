@@ -77,27 +77,33 @@ export default function App() {
   const activeModuleLabel = menuItems.find(m => m.id === activeModule)?.label || "Dashboard";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-bg">
       {/* Header */}
-      <header className="h-16 bg-white text-slate-800 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm border-b border-slate-100">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-nexus-primary rounded flex items-center justify-center font-black text-xl text-white">N</div>
-            <h1 className="text-xl font-bold tracking-tighter text-nexus-sidebar">NEXUS</h1>
+      <header className="h-16 bg-surface flex items-center justify-between px-8 sticky top-0 z-50 border-b border-border">
+        <div className="flex items-center gap-12">
+          <div className="flex items-center gap-3">
+            <img 
+              src="https://lh3.googleusercontent.com/d/1sNzDKhdh2zH8d8DoyqIjx8l5LzBEXN5g" 
+              alt="WFS Logo" 
+              className="h-12 object-contain"
+              referrerPolicy="no-referrer"
+            />
+            <div className="h-6 w-[1px] bg-border mx-2"></div>
+            <h1 className="text-lg font-bold tracking-tight text-text font-sans">WFS SYSTEM</h1>
           </div>
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-2">
             {filteredMenu.map(item => (
               <button 
                 key={item.id}
                 onClick={() => !item.disabled && setActiveModule(item.id)}
                 disabled={item.disabled}
                 title={item.disabled ? "Módulo em desenvolvimento" : ""}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-none text-[11px] font-bold uppercase tracking-widest transition-all font-mono ${
                   item.disabled 
-                    ? 'opacity-40 cursor-not-allowed text-slate-400 border-transparent' 
+                    ? 'opacity-40 cursor-not-allowed text-hint' 
                     : activeModule === item.id 
-                      ? 'bg-white border-slate-200 shadow-sm text-nexus-sidebar' 
-                      : 'text-slate-500 hover:text-nexus-sidebar hover:bg-slate-50 border-transparent'
+                      ? 'bg-accent text-white' 
+                      : 'text-muted hover:text-text hover:bg-surface2'
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -111,39 +117,38 @@ export default function App() {
           <div className="relative" ref={contractMenuRef}>
             <button 
               onClick={() => setShowContractMenu(!showContractMenu)}
-              className="flex items-center justify-between gap-4 bg-white hover:bg-slate-50 px-4 py-2 rounded-[9px] transition-all border border-slate-200 shadow-sm min-w-[200px]"
+              className="flex items-center justify-between gap-4 bg-surface hover:bg-surface2 px-4 py-2 rounded-none transition-all border border-border2 min-w-[220px]"
             >
-              <p className="text-xs font-black text-nexus-sidebar uppercase tracking-tight">
-                Contrato: <span className="text-nexus-primary">{currentContract}</span>
+              <p className="text-[11px] font-bold text-text uppercase tracking-tight font-mono">
+                Contrato: <span className="text-accent">{currentContract}</span>
               </p>
-              <ChevronDown className="w-4 h-4 text-slate-400" />
+              <ChevronDown className="w-4 h-4 text-hint" />
             </button>
 
             <AnimatePresence>
               {showContractMenu && (
                 <motion.div 
-                  initial={{ opacity: 0, y: -5, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -5, scale: 0.95 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 py-1 z-50 overflow-hidden"
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="absolute right-0 top-full mt-1 w-full bg-surface shadow-xl border border-border py-1 z-50 overflow-hidden rounded-none"
                 >
-                  <div className="px-3 py-2 border-b border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">Trocar Contrato</p>
+                  <div className="px-4 py-2 border-b border-border">
+                    <p className="text-[10px] font-bold text-hint uppercase font-mono">Trocar Contrato</p>
                   </div>
                   {(["TECA", "RAMPA", "CANAL DE INSPEÇÃO"] as Contract[]).map(c => (
                     <button 
                       key={c}
                       onClick={() => { setCurrentContract(c); setShowContractMenu(false); }}
-                      className={`w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-wider ${currentContract === c ? 'text-nexus-primary bg-nexus-primary/5' : 'text-slate-600 hover:bg-slate-50'}`}
+                      className={`w-full text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider font-mono ${currentContract === c ? 'text-accent bg-accent-light' : 'text-muted hover:bg-surface2'}`}
                     >
                       {c}
                     </button>
                   ))}
-                  <div className="border-t border-slate-100 mt-1 pt-1">
+                  <div className="border-t border-border mt-1 pt-1">
                     <button 
                       onClick={() => setUser(null)}
-                      className="w-full text-left px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-600 hover:bg-red-50 flex items-center gap-2"
+                      className="w-full text-left px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-danger hover:bg-accent-light flex items-center gap-2 font-mono"
                     >
                       <LogOut className="w-3 h-3" /> Logoff
                     </button>
@@ -156,45 +161,47 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 bg-nexus-bg overflow-y-auto relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentContract}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="w-full h-full"
-          >
-            <div className={activeModule === "dashboard" ? "block" : "hidden"}>
-              <Dashboard currentContract={currentContract} />
-            </div>
-            
-            <div className={activeModule === "rh" ? "block" : "hidden"}>
-              <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />
-            </div>
-            
-            <div className={activeModule === "sst" ? "block" : "hidden"}>
-              <SSTModule user={user} currentContract={currentContract} />
-            </div>
-            
-            <div className={activeModule === "escala" ? "block" : "hidden"}>
-              <EscalaModule user={user} currentContract={currentContract} />
-            </div>
-            
-            <div className={activeModule === "treinamento" ? "block" : "hidden"}>
-              <TreinamentoModule user={user} currentContract={currentContract} />
-            </div>
-          </motion.div>
-        </AnimatePresence>
+      <main className="flex-1 overflow-y-auto relative">
+        <div className="max-w-7xl mx-auto p-4 md:p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentContract}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="w-full h-full"
+            >
+              <div className={activeModule === "dashboard" ? "block" : "hidden"}>
+                <Dashboard currentContract={currentContract} />
+              </div>
+              
+              <div className={activeModule === "rh" ? "block" : "hidden"}>
+                <RHModule user={user} onViewDetails={setSelectedEmployee} currentContract={currentContract} />
+              </div>
+              
+              <div className={activeModule === "sst" ? "block" : "hidden"}>
+                <SSTModule user={user} currentContract={currentContract} />
+              </div>
+              
+              <div className={activeModule === "escala" ? "block" : "hidden"}>
+                <EscalaModule user={user} currentContract={currentContract} />
+              </div>
+              
+              <div className={activeModule === "treinamento" ? "block" : "hidden"}>
+                <TreinamentoModule user={user} currentContract={currentContract} />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
       {/* Footer / Quick Actions */}
-      <footer className="h-10 bg-white border-t flex items-center justify-between px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-        <div>NEXUS v1.0.0 • Enterprise Resource Planning</div>
-        <div className="flex gap-4">
-          <button onClick={() => setIsPortal(true)} className="hover:text-nexus-primary transition-colors">Acessar Portal do Colaborador</button>
-          <span>Suporte: 0800-NEXUS</span>
+      <footer className="h-10 bg-surface border-t border-border flex items-center justify-between px-8 text-[10px] font-bold text-hint uppercase tracking-widest font-mono">
+        <div>WFS SYSTEM v2.0.0 • Gestão Operacional de Aeroportos</div>
+        <div className="flex gap-6">
+          <button onClick={() => setIsPortal(true)} className="hover:text-accent transition-colors">Portal do Colaborador</button>
+          <span>Suporte Técnico WFS</span>
         </div>
       </footer>
 

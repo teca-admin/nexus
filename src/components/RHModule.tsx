@@ -73,31 +73,31 @@ export const RHModule = ({ user, onViewDetails, currentContract }: { user: User,
   });
 
   return (
-    <div className="p-6 w-full space-y-6">
-      <div className="bg-white p-4 border-2 border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+    <div className="w-full space-y-8">
+      <div className="bg-surface p-6 border border-border shadow-sm flex flex-col md:flex-row gap-6 justify-between items-center">
         <div>
-          <h2 className="text-xl font-black text-slate-800 tracking-tighter uppercase flex items-center gap-2">
-            <Users className="w-5 h-5 text-nexus-primary" />
+          <h2 className="text-2xl font-bold text-text tracking-tight uppercase flex items-center gap-3 font-sans">
+            <Users className="w-6 h-6 text-accent" />
             Gestão de Funcionários
           </h2>
-          <p className="text-[10px] font-sans font-bold text-slate-400 uppercase tracking-widest">
+          <p className="text-[11px] font-mono font-bold text-hint uppercase tracking-widest mt-1">
             {funcionarios.length} Colaboradores Registrados
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 items-center flex-1 justify-end">
           <div className="relative w-full md:max-w-md">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-hint" />
             <input 
               type="text" 
               placeholder="Buscar por nome ou matrícula..." 
-              className="w-full bg-slate-50 border-2 border-slate-100 focus:border-nexus-primary focus:ring-0 rounded-none px-9 py-2.5 text-sm outline-none"
+              className="input-field pl-10"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto relative">
-            <Filter className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 z-10" />
+            <Filter className="w-4 h-4 text-hint absolute left-3 top-1/2 -translate-y-1/2 z-10" />
             <CustomSelect 
               options={[
                 { label: "Todos os Status", value: "Todos" },
@@ -112,94 +112,84 @@ export const RHModule = ({ user, onViewDetails, currentContract }: { user: User,
             />
           </div>
           {canEdit && (
-            <button onClick={() => setShowForm(true)} className="bg-nexus-primary text-white font-bold uppercase text-xs tracking-widest px-6 py-3 rounded-none hover:bg-nexus-primary/90 transition-all shadow-lg flex items-center gap-2 whitespace-nowrap cursor-pointer">
+            <button onClick={() => setShowForm(true)} className="btn-primary px-8 py-3 flex items-center gap-2 whitespace-nowrap">
               <UserPlus className="w-4 h-4" /> Novo Funcionário
             </button>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-none shadow-sm border-2 border-slate-200 overflow-hidden">
+      <div className="bg-surface border border-border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm table-fixed">
-            <thead className="bg-slate-50/80 border-b border-slate-200">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="w-64 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider">Colaborador</th>
-                <th className="w-24 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Matrícula</th>
-                <th className="w-40 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Cargo</th>
-                <th className="w-24 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Contrato</th>
-                <th className="w-32 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">CPF</th>
-                <th className="w-32 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">RG</th>
-                <th className="w-28 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Nascimento</th>
-                <th className="w-28 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Admissão</th>
-                <th className="w-24 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Status</th>
-                <th className="w-24 px-6 py-4 font-bold text-slate-500 uppercase text-[10px] tracking-wider text-center">Pendências</th>
+                <th className="w-64">Colaborador</th>
+                <th className="w-24 text-center">Matrícula</th>
+                <th className="w-40 text-center">Cargo</th>
+                <th className="w-24 text-center">Contrato</th>
+                <th className="w-32 text-center">CPF</th>
+                <th className="w-32 text-center">RG</th>
+                <th className="w-28 text-center">Nascimento</th>
+                <th className="w-28 text-center">Admissão</th>
+                <th className="w-24 text-center">Status</th>
+                <th className="w-24 text-center">Pendências</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {filteredFuncionarios.length > 0 ? (
                 filteredFuncionarios.map(f => (
                   <tr 
                     key={f.id} 
-                    className="hover:bg-slate-50/80 transition-colors group cursor-pointer" 
+                    className="group cursor-pointer" 
                     onDoubleClick={() => onViewDetails?.(f)}
-                    onMouseEnter={() => {
-                      // Prefetch data
-                      fetch(`/api/funcionarios/${f.id}`).catch(() => {});
-                    }}
                   >
-                    <td className="px-6 py-4 truncate">
+                    <td className="truncate">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-nexus-primary/10 text-nexus-primary flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-8 h-8 bg-accent-light text-accent flex items-center justify-center font-bold text-xs shrink-0 font-mono">
                           {f.nome.charAt(0)}
                         </div>
                         <div className="truncate">
-                          <div className="font-bold text-slate-800 group-hover:text-nexus-primary transition-colors truncate">{f.nome}</div>
+                          <div className="font-bold text-text group-hover:text-accent transition-colors truncate">{f.nome}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center text-sm font-bold text-slate-700 truncate">{f.matricula}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{f.cargo}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{f.contrato}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{f.cpf}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{f.rg || "-"}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{formatDate(f.data_nascimento || "") || "-"}</td>
-                    <td className="px-6 py-4 text-center text-xs text-slate-600 truncate">{formatDate(f.data_admissao)}</td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        f.status === 'Ativo' ? 'bg-green-100 text-green-700 border border-green-200' : 
-                        f.status === 'Férias' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                        f.status === 'Afastado' ? 'bg-orange-100 text-orange-700 border border-orange-200' :
-                        'bg-slate-100 text-slate-700 border border-slate-200'
+                    <td className="text-center font-mono text-xs font-bold">{f.matricula}</td>
+                    <td className="text-center text-xs font-bold text-muted uppercase font-mono">{f.cargo}</td>
+                    <td className="text-center text-xs font-bold text-muted uppercase font-mono">{f.contrato}</td>
+                    <td className="text-center text-xs font-bold text-muted font-mono">{f.cpf}</td>
+                    <td className="text-center text-xs font-bold text-muted font-mono">{f.rg || "-"}</td>
+                    <td className="text-center text-xs font-bold text-muted font-mono">{formatDate(f.data_nascimento || "") || "-"}</td>
+                    <td className="text-center text-xs font-bold text-muted font-mono">{formatDate(f.data_admissao)}</td>
+                    <td className="text-center">
+                      <span className={`badge ${
+                        f.status === 'Ativo' ? 'badge-success' : 
+                        f.status === 'Férias' ? 'bg-accent-light text-accent' :
+                        f.status === 'Afastado' ? 'bg-surface2 text-muted' :
+                        'bg-surface2 text-hint'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                          f.status === 'Ativo' ? 'bg-green-500' : 
-                          f.status === 'Férias' ? 'bg-amber-500' :
-                          f.status === 'Afastado' ? 'bg-orange-500' :
-                          'bg-slate-500'
-                        }`}></span>
                         {f.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="text-center">
                       {hasPendingInfo(f) ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200">
+                        <span className="badge bg-accent-light text-danger">
                           Pendente
                         </span>
                       ) : (
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider">OK</span>
+                        <span className="text-[10px] text-hint uppercase font-mono font-bold">OK</span>
                       )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-50 mb-4">
-                      <Search className="w-8 h-8 text-slate-300" />
+                  <td colSpan={10} className="px-6 py-16 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-surface2 mb-4">
+                      <Search className="w-8 h-8 text-hint" />
                     </div>
-                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-1">Nenhum funcionário encontrado</h3>
-                    <p className="text-xs text-slate-400">Tente ajustar os filtros ou a busca.</p>
+                    <h3 className="text-sm font-bold text-text uppercase tracking-widest mb-1 font-mono">Nenhum funcionário encontrado</h3>
+                    <p className="text-xs text-muted font-mono">Tente ajustar os filtros ou a busca.</p>
                   </td>
                 </tr>
               )}
