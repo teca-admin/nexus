@@ -32,11 +32,10 @@ export const EmployeePortal = ({ onExit }: { onExit?: () => void }) => {
     
     setIsLoginLoading(true);
     try {
-      const res = await fetch(`/api/funcionarios/matricula/${matricula}`);
+      const res = await fetch("/api/search?q=" + matricula);
       const data = await res.json();
-      
-      if (data.success) {
-        const emp = data.funcionario;
+      if (data.length > 0) {
+        const emp = data[0];
         setEmployee(emp);
         
         const [rres, cres] = await Promise.all([

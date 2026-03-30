@@ -1,5 +1,5 @@
 {
-  "name": "WFS Login",
-  "description": "A minimalist and clean login page for WFS, featuring a centered login card and a prominent logo.",
+  "name": "NEXUS",
+  "description": "Sistema de gestão corporativa integrada com módulos de RH, SST, Escala e Treinamentos.",
   "requestFramePermissions": []
 }

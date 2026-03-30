@@ -439,7 +439,7 @@ app.get("/api/dashboard", async (req, res) => {
 
 app.get("/api/search", async (req, res) => {
   const { q } = req.query;
-  const { data: results } = await supabase.from("funcionarios").select("id, nome, matricula, cpf, cargo").or(`nome.ilike.%${q}%,matricula.eq.${q},cpf.eq.${q}`);
+  const { data: results } = await supabase.from("funcionarios").select("id, nome, matricula, cpf, cargo").or(`nome.ilike.%${q}%,matricula.ilike.%${q}%,cpf.ilike.%${q}%`);
   res.json(results || []);
 });
 
