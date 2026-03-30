@@ -20,18 +20,18 @@ export const CustomSelect = ({ options, value, onChange, placeholder }: { option
   return (
     <div className="relative w-full md:w-auto" ref={ref}>
       <div 
-        className="bg-slate-50 border-2 border-slate-100 focus:border-nexus-primary rounded-none px-9 py-2.5 text-sm cursor-pointer flex items-center justify-between min-w-[180px]"
+        className="bg-surface border border-border2 focus:border-accent rounded-none px-10 py-[10px] text-sm cursor-pointer flex items-center justify-between min-w-[200px] font-sans transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="truncate">{selectedLabel}</span>
-        <ChevronDown className="w-4 h-4 text-slate-400" />
+        <span className="truncate font-medium text-text">{selectedLabel}</span>
+        <ChevronDown className="w-4 h-4 text-hint" />
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white border-2 border-slate-200 shadow-lg z-50 mt-1">
+        <div className="absolute top-full left-0 w-full bg-surface border border-border shadow-xl z-50 mt-1 rounded-none overflow-hidden">
           {options.map(option => (
             <div 
               key={option.value}
-              className="px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm"
+              className={`px-4 py-3 hover:bg-surface2 cursor-pointer text-sm font-medium transition-colors ${value === option.value ? 'text-accent bg-accent-light' : 'text-text'}`}
               onClick={() => {
                 onChange(option.value);
                 setIsOpen(false);
@@ -77,18 +77,18 @@ export const CustomDatePicker = ({ value, onChange, className, textClassName, st
   return (
     <div className="relative w-full" ref={ref}>
       <div 
-        className={`input-field bg-slate-50 focus:bg-white cursor-pointer flex items-center justify-between ${className || ''}`}
+        className={`input-field cursor-pointer flex items-center justify-between ${className || ''}`}
         style={style}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className={textClassName} style={textStyle}>{value ? formatDate(value) : 'DD/MM/AAAA'}</span>
-        <CalendarIcon className="w-4 h-4 text-slate-400" />
+        <span className={`${textClassName || ''} font-mono font-bold text-text`} style={textStyle}>{value ? formatDate(value) : 'DD/MM/AAAA'}</span>
+        <CalendarIcon className="w-4 h-4 text-hint" />
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white border-2 border-slate-200 shadow-lg z-50 mt-1 p-2">
+        <div className="absolute top-full left-0 w-full bg-surface border border-border shadow-xl z-50 mt-1 p-4 rounded-none">
           <input 
             type="date" 
-            className="w-full p-2 border border-slate-200"
+            className="w-full p-3 border border-border2 focus:border-accent outline-none font-mono text-sm"
             value={value}
             onChange={(e) => {
               onChange(e.target.value);

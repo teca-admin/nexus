@@ -25,15 +25,22 @@ export const Login = ({ onLogin }: { onLogin: (user: User) => void }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-nexus-bg">
+    <div className="min-h-screen w-full flex items-center justify-center bg-nexus-bg p-4 relative">
+      {/* Logotipo WFS */}
+      <img 
+        src="https://lh3.googleusercontent.com/d/1sNzDKhdh2zH8d8DoyqIjx8l5LzBEXN5g" 
+        alt="WFS Logo" 
+        className="absolute top-6 left-6 h-[168px] w-auto object-contain"
+        referrerPolicy="no-referrer"
+      />
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md"
+        className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md z-10"
       >
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-nexus-sidebar tracking-tighter">NEXUS</h1>
-          <p className="text-slate-500 text-sm uppercase tracking-widest mt-2">Enterprise Management</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

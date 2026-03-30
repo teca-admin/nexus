@@ -22,15 +22,15 @@ export const Dashboard = ({ currentContract }: { currentContract: Contract }) =>
   if (!stats) return <div className="p-8 text-slate-400">Carregando indicadores...</div>;
 
   const cards = [
-    { id: "totalFuncionarios", label: "Total Funcionários", value: stats.totalFuncionarios, icon: Users, color: "text-blue-600" },
-    { id: "asosVencidos", label: "ASO", value: stats.asosVencidos, icon: AlertCircle, color: "text-nexus-primary" },
-    { id: "semEscala", label: "Sem Escala Ativa", value: stats.semEscala, icon: Clock, color: "text-amber-600" },
-    { id: "treinamentosPendentes", label: "Treinamentos Pendentes", value: stats.treinamentosPendentes, icon: GraduationCap, color: "text-indigo-600" },
+    { id: "totalFuncionarios", label: "Total Funcionários", value: stats.totalFuncionarios, icon: Users, color: "text-accent" },
+    { id: "asosVencidos", label: "ASO Vencidos", value: stats.asosVencidos, icon: AlertCircle, color: "text-danger" },
+    { id: "semEscala", label: "Sem Escala Ativa", value: stats.semEscala, icon: Clock, color: "text-accent" },
+    { id: "treinamentosPendentes", label: "Treinamentos Pendentes", value: stats.treinamentosPendentes, icon: GraduationCap, color: "text-accent" },
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {cards.map((card, i) => {
           const isClickable = card.id !== "totalFuncionarios";
           return (
@@ -38,52 +38,52 @@ export const Dashboard = ({ currentContract }: { currentContract: Contract }) =>
               key={i}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`card flex items-center justify-between transition-all group ${isClickable ? 'cursor-pointer hover:border-nexus-primary' : 'cursor-default'}`}
+              className={`card flex items-center justify-between transition-all group ${isClickable ? 'cursor-pointer hover:border-accent' : 'cursor-default'}`}
               onClick={() => isClickable && handleCardClick(card.id, card.label)}
             >
               <div>
-                <p className={`text-[10px] font-bold text-slate-500 uppercase tracking-wider transition-colors ${isClickable ? 'group-hover:text-nexus-primary' : ''}`}>{card.label}</p>
-                <p className="text-3xl font-bold mt-1 text-slate-700">{card.value}</p>
+                <p className={`text-[11px] font-bold text-hint uppercase tracking-widest font-mono transition-colors ${isClickable ? 'group-hover:text-accent' : ''}`}>{card.label}</p>
+                <p className="text-3xl font-bold mt-2 text-text">{card.value}</p>
               </div>
-              <card.icon className={`w-8 h-8 opacity-20 ${card.color} ${isClickable ? 'group-hover:opacity-40' : ''} transition-opacity`} />
+              <card.icon className={`w-10 h-10 opacity-10 ${card.color} ${isClickable ? 'group-hover:opacity-40' : ''} transition-opacity`} />
             </motion.div>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="card">
-          <h3 className="text-sm font-bold text-nexus-sidebar uppercase pb-3 mb-4">Atividades Recentes</h3>
-          <div className="space-y-3">
+          <h3 className="text-sm font-bold text-text uppercase pb-4 mb-6 border-b border-border font-mono">Atividades Recentes</h3>
+          <div className="space-y-4">
             {stats.atividades && stats.atividades.length > 0 ? (
               stats.atividades.map((atv: any, i: number) => (
-                <div key={i} className="flex items-center gap-3 text-sm p-2 hover:bg-slate-50 rounded transition-colors">
-                  <div className={`w-2 h-2 rounded-full ${atv.tipo === 'treinamento' ? 'bg-green-500' : 'bg-nexus-primary'}`} />
-                  <span className="text-slate-600">{atv.texto}</span>
-                  <span className="ml-auto text-[10px] text-slate-400 font-bold uppercase">{atv.tempo}</span>
+                <div key={i} className="flex items-center gap-4 text-sm p-3 hover:bg-surface2 transition-colors border-b border-border last:border-0">
+                  <div className={`w-2 h-2 ${atv.tipo === 'treinamento' ? 'bg-success' : 'bg-accent'}`} />
+                  <span className="text-muted font-medium">{atv.texto}</span>
+                  <span className="ml-auto text-[10px] text-hint font-bold uppercase font-mono">{atv.tempo}</span>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 italic p-4 text-center">Nenhuma atividade recente registrada.</p>
+              <p className="text-xs text-hint italic p-4 text-center font-mono">Nenhuma atividade recente registrada.</p>
             )}
           </div>
         </div>
         <div className="card">
-          <h3 className="text-sm font-bold text-nexus-sidebar uppercase pb-3 mb-4">Alertas Críticos</h3>
-          <div className="space-y-3">
+          <h3 className="text-sm font-bold text-text uppercase pb-4 mb-6 border-b border-border font-mono">Alertas Críticos</h3>
+          <div className="space-y-4">
             {stats.alertas && stats.alertas.length > 0 ? (
               stats.alertas.map((alerta: any, i: number) => (
-                <div key={i} className={`flex items-center gap-3 text-sm p-3 rounded-md border ${
-                  alerta.tipo === 'erro' ? 'bg-red-50 text-nexus-primary border-red-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                <div key={i} className={`flex items-center gap-4 text-sm p-4 border ${
+                  alerta.tipo === 'erro' ? 'bg-accent-light text-danger border-danger/20' : 'bg-surface2 text-text border-border'
                 }`}>
-                  {alerta.tipo === 'erro' ? <AlertCircle className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
-                  <span className="font-medium">{alerta.texto}</span>
+                  {alerta.tipo === 'erro' ? <AlertCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+                  <span className="font-bold uppercase tracking-tight font-mono">{alerta.texto}</span>
                 </div>
               ))
             ) : (
-              <div className="flex items-center gap-3 text-sm p-3 bg-green-50 text-green-700 rounded-md border border-green-100">
-                <CheckCircle className="w-4 h-4" />
-                <span className="font-medium">Tudo em dia! Nenhum alerta crítico no momento.</span>
+              <div className="flex items-center gap-4 text-sm p-4 bg-[#F0FDF4] text-success border border-success/20">
+                <CheckCircle className="w-5 h-5" />
+                <span className="font-bold uppercase tracking-tight font-mono">Tudo em dia! Nenhum alerta crítico no momento.</span>
               </div>
             )}
           </div>
@@ -92,46 +92,46 @@ export const Dashboard = ({ currentContract }: { currentContract: Contract }) =>
 
       <AnimatePresence>
         {selectedList && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="fixed inset-0 bg-text/80 flex items-center justify-center z-[60] p-8 backdrop-blur-sm">
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[80vh]"
+              exit={{ scale: 0.98, opacity: 0 }}
+              className="bg-surface shadow-2xl w-full max-w-5xl flex flex-col max-h-[85vh]"
             >
-              <div className="bg-nexus-sidebar p-4 text-white flex justify-between items-center">
-                <h3 className="text-lg font-bold uppercase tracking-tight">{selectedList.title}</h3>
-                <button onClick={() => setSelectedList(null)} className="hover:bg-white/10 p-1 rounded transition-colors">
-                  <X className="w-5 h-5" />
+              <div className="bg-text p-5 text-white flex justify-between items-center">
+                <h3 className="text-lg font-bold uppercase tracking-widest font-mono">{selectedList.title}</h3>
+                <button onClick={() => setSelectedList(null)} className="hover:bg-white/10 p-2 transition-colors">
+                  <X className="w-6 h-6" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 border-b sticky top-0">
+              <div className="flex-1 overflow-y-auto p-8">
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <th className="px-4 py-3 font-bold text-slate-500 uppercase text-[10px]">Matrícula</th>
-                      <th className="px-4 py-3 font-bold text-slate-500 uppercase text-[10px]">Nome</th>
-                      <th className="px-4 py-3 font-bold text-slate-500 uppercase text-[10px]">Cargo / Setor</th>
-                      <th className="px-4 py-3 font-bold text-slate-500 uppercase text-[10px]">Status</th>
-                      <th className="px-4 py-3 font-bold text-slate-500 uppercase text-[10px]">Info Adicional</th>
+                      <th>Matrícula</th>
+                      <th>Nome</th>
+                      <th>Cargo / Setor</th>
+                      <th>Status</th>
+                      <th>Info Adicional</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody>
                     {selectedList.data.map((f: any) => (
-                      <tr key={f.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-xs">{f.matricula}</td>
-                        <td className="px-4 py-3 font-medium">{f.nome}</td>
-                        <td className="px-4 py-3">
-                          <div className="text-xs font-bold text-slate-700">{f.cargo}</div>
+                      <tr key={f.id}>
+                        <td className="font-mono text-xs font-bold">{f.matricula}</td>
+                        <td className="font-bold">{f.nome}</td>
+                        <td>
+                          <div className="text-xs font-bold text-muted uppercase font-mono">{f.cargo}</div>
                         </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            (f.status === 'Ativo' || !f.status) ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                        <td>
+                          <span className={`badge ${
+                            (f.status === 'Ativo' || !f.status) ? 'badge-success' : 'bg-accent-light text-accent'
                           }`}>
                             {f.status || "Ativo"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs font-bold text-nexus-primary uppercase">
+                        <td className="font-mono text-xs font-bold text-accent uppercase">
                           {f.info_adicional || "-"}
                         </td>
                       </tr>
