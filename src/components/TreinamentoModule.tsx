@@ -583,7 +583,7 @@ export const TreinamentoModule = ({ user, currentContract }: { user: User, curre
                       </div>
                       <div className="flex gap-2 items-end">
                         <div className="flex-1 relative">
-                          <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">Arquivo de Vídeo (Máx 50MB)</label>
+                          <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">Arquivo de Vídeo (Máx 20MB)</label>
                           <div className="relative h-10 border rounded-lg bg-white flex items-center px-3 cursor-pointer hover:border-nexus-primary transition-all">
                             <Video className="w-4 h-4 text-slate-400 mr-2" />
                             <span className="text-xs text-slate-500 truncate">
@@ -596,8 +596,8 @@ export const TreinamentoModule = ({ user, currentContract }: { user: User, curre
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                  if (file.size > 50 * 1024 * 1024) {
-                                    alert("Arquivo muito grande! Máximo 50MB.");
+                                  if (file.size > 20 * 1024 * 1024) {
+                                    alert("Arquivo muito grande! Máximo 20MB.");
                                     return;
                                   }
                                   
